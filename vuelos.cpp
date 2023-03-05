@@ -1,6 +1,8 @@
 #include "vuelos.h"
 
-nodo_vuelo::nodo_vuelo(const std::string& c, const std::string& ciu, int cup, unsigned int e) {
+nodo_vuelo::nodo_vuelo(
+    const std::string& c, const std::string& ciu, int cup, unsigned int e)
+{
     codigo = c;
     ciudad = ciu;
     cupos = cup;
@@ -8,7 +10,8 @@ nodo_vuelo::nodo_vuelo(const std::string& c, const std::string& ciu, int cup, un
     siguiente = anterior = NULL;
 }
 
-void Vuelos::ingresar_vuelo() {
+void Vuelos::ingresar_vuelo()
+{
     std::string codigo, ciudad;
     int cupos;
 
@@ -32,7 +35,6 @@ void Vuelos::ingresar_vuelo() {
     }
 
     unsigned int estado = pedir_estado();
-
     nuevo = (ptrnodov) new nodo_vuelo(codigo, ciudad, cupos, estado);
 
     if (primero == NULL)
@@ -44,25 +46,29 @@ void Vuelos::ingresar_vuelo() {
     }
 }
 
-ptrnodov Vuelos::buscar_vuelo(const std::string& c) {
+ptrnodov Vuelos::buscar_vuelo(const std::string& c)
+{
     ptrnodov it = primero;
-    for (; it != NULL && it->codigo != c; it = it->siguiente);
+    for (; it != NULL && it->codigo != c; it = it->siguiente)
+        ;
     return it;
 }
 
-void Vuelos::listar_vuelos() {
+void Vuelos::listar_vuelos()
+{
     std::cout << "\n*** LISTA DE VUELOS ***";
     for (ptrnodov it = primero; it != NULL; it = it->siguiente) {
         std::cout << "\n\nCódigo: " << it->codigo
-            << "\nCiudad destino: " << it->ciudad
-            << "\nCupos disponibles: " << it->cupos
-            << "\nEstado del vuelo: " << (it->estado == true ? 1 : 0)
-            << "\n";
+                  << "\nCiudad destino: " << it->ciudad
+                  << "\nCupos disponibles: " << it->cupos
+                  << "\nEstado del vuelo: " << (it->estado == true ? 1 : 0)
+                  << "\n";
         it->reservas.imprimir();
     }
 }
 
-void Vuelos::ingresar_reserva() {
+void Vuelos::ingresar_reserva()
+{
     std::string cedula, nombre;
 
     std::cout << "\nIngrese la cédula del pasajero: ";
@@ -73,16 +79,16 @@ void Vuelos::ingresar_reserva() {
 
     ptrnodov it = pedir_vuelo();
     bool espera = (it->cupos > 0 && it->estado == 1 ? false : true);
-
     it->reservas.ingresar(cedula, nombre, espera);
-    
+
     if (!espera)
         --it->cupos;
 
     std::cout << (espera ? "En lista de espera." : "Cupo reservado.");
 }
 
-ptrnodov Vuelos::pedir_vuelo() {
+ptrnodov Vuelos::pedir_vuelo()
+{
     std::string codigo;
 
     std::cout << "\nInserte el código del vuelo: ";
@@ -99,11 +105,13 @@ ptrnodov Vuelos::pedir_vuelo() {
     return it;
 }
 
-void Vuelos::modificar_cupos(char o) {
+void Vuelos::modificar_cupos(char o)
+{
     unsigned int count;
     ptrnodov ptr = pedir_vuelo();
 
-    std::cout << "\nInserte la cantidad de cupos " << (o == 'a' ? "adicionales" : "a restar") << ".";
+    std::cout << "\nInserte la cantidad de cupos "
+              << (o == 'a' ? "adicionales" : "a restar") << ".";
     std::cin >> count;
 
     while (count < 0) {
@@ -115,13 +123,13 @@ void Vuelos::modificar_cupos(char o) {
         std::cout << "\nNo se modificó la cantidad de cupos.";
         return;
     }
-    
+
     if (o == 'a') {
         ptr->cupos += count;
         ptrnodor it = ptr->reservas.primero;
 
         if (it != NULL && ptr->estado == 1 && ptr->reservas.ultimo->espera)
-            for (; ptr->cupos != 0 && it != NULL; it = it->siguiente)
+            for (; it != NULL && ptr->cupos != 0; it = it->siguiente)
                 if (it->espera) {
                     it->espera = false;
                     --(ptr->cupos);
@@ -131,17 +139,21 @@ void Vuelos::modificar_cupos(char o) {
         ptrnodor it = ptr->reservas.ultimo;
 
         if (it != NULL && ptr->estado == 1)
-            for (; ptr->cupos != 0; it = it->anterior)
-                if (!(it->espera)) {
-                    it->espera = true;
-                    ++(ptr->cupos);
-                }
+            for (; it != NULL && ptr->cupos != 0; it = it->anterior) {
+                it->espera = true;
+                ++(ptr->cupos);
+            }
+
+        if (ptr->cupos < 0) {
+            ptr->cupos = 0;
+        }
     }
 
     std::cout << "\nCupos modificados y lista de espera actualizada.";
 }
 
-unsigned int Vuelos::pedir_estado() {
+unsigned int Vuelos::pedir_estado()
+{
     unsigned int estado;
 
     std::cout << "\nInserte el estado del vuelo (1 Activo/0 Cancelado): ";
@@ -155,7 +167,8 @@ unsigned int Vuelos::pedir_estado() {
     return estado;
 }
 
-void Vuelos::modificar_estado() {
+void Vuelos::modificar_estado()
+{
     ptrnodov ptr = pedir_vuelo();
     unsigned int estado = pedir_estado();
 
@@ -163,22 +176,23 @@ void Vuelos::modificar_estado() {
         std::cout << "\nEl estado del vuelo sigue siendo el mismo.";
         return;
     }
-    
-    ptrnodor it = ptr->reservas.primero;
 
-    if (it != NULL) {
-        if (ptr->estado == 1) {
-            for (; it != NULL && !(it->espera); it = it->siguiente) {
-                it->espera = true;
-                ++(ptr->cupos);
-            }
-        } else {
-            for (; it != NULL && ptr->cupos != 0; it = it->siguiente) {
-                it->espera = false;
-                --(ptr->cupos);
-            }
-        }
+    ptrnodor it = ptr->reservas.primero;
+    ptr->estado = estado;
+
+    if (it == NULL) {
+        return;
     }
 
-    ptr->estado = estado;
+    if (estado == 0) {
+        for (; it != NULL && !(it->espera); it = it->siguiente) {
+            it->espera = true;
+            ++(ptr->cupos);
+        }
+    } else {
+        for (; it != NULL && ptr->cupos != 0; it = it->siguiente) {
+            it->espera = false;
+            --(ptr->cupos);
+        }
+    }
 }

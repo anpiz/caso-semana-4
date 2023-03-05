@@ -2,31 +2,26 @@
 #include <vector>
 
 char opcion;
-Vuelos lista_vuelos;
+Vuelos vuelos;
 
-void opciones(std::vector<std::string>);
-void vuelos();
-void modificar_vuelos();
-void cupos();
-void reservas();
-void continuar();
-void ingresar_vuelos();
-void ingresar_reservas();
+void menu_opciones(std::vector<std::string>);
+void menu_vuelos();
+void menu_modificar_vuelos();
+void menu_cupos();
+void menu_reservas();
+void menu_continuar();
+void menu_ingresar_vuelos();
+void menu_ingresar_reservas();
 
 // Mostrar el título del menú y sus opciones más cómodamente.
-void opciones(std::vector<std::string> s)
+void menu_opciones(std::vector<std::string> s)
 {
     unsigned int i = 1;
     auto it = s.cbegin();
-
     std::cout << "\nMENÚ " << *(it++);
-
-    for (; it != s.cend(); ++it, ++i) {
+    for (; it != s.cend(); ++it, ++i)
         std::cout << "\n" << i << ". " << *it << ".";
-    }
-
-    std::cout << "\n"
-              << i << ". Cerrar."
+    std::cout << "\n" << i << ". Cerrar."
               << "\nInserte opción: ";
     std::cin >> opcion;
 }
@@ -34,14 +29,14 @@ void opciones(std::vector<std::string> s)
 void principal()
 {
     do {
-        opciones({ "PRINCIPAL", "Vuelos", "Reservas" });
+        menu_opciones({ "PRINCIPAL", "Vuelos", "Reservas" });
 
         switch (opcion) {
             case '1':
-                vuelos();
+                menu_vuelos();
                 break;
             case '2':
-                ingresar_reservas();
+                menu_ingresar_reservas();
                 break;
             case '3':
                 std::cout << "\nCerrando." << std::endl;
@@ -52,21 +47,21 @@ void principal()
     } while (opcion != '3');
 }
 
-void vuelos()
+void menu_vuelos()
 {
     do {
-        opciones({ "VUELOS", "Entrar vuelos", "Modificar existentes",
+        menu_opciones({ "VUELOS", "Entrar vuelos", "Modificar existentes",
                 "Listar vuelos" });
 
         switch (opcion) {
             case '1':
-                ingresar_vuelos();
+                menu_ingresar_vuelos();
                 break;
             case '2':
-                modificar_vuelos();
+                menu_modificar_vuelos();
                 break;
             case '3':
-                lista_vuelos.listar_vuelos();
+                vuelos.listar_vuelos();
                 break;
             case '4':
                 std::cout << "\nVolviendo al menú anterior.";
@@ -77,17 +72,17 @@ void vuelos()
     } while (opcion != '4');
 }
 
-void modificar_vuelos()
+void menu_modificar_vuelos()
 {
     do {
-        opciones({ "MODIFICAR VUELOS", "Cupo", "Estado del vuelo" });
+        menu_opciones({ "MODIFICAR VUELOS", "Cupo", "Estado del vuelo" });
 
         switch (opcion) {
             case '1':
-                cupos();
+                menu_cupos();
                 break;
             case '2':
-                lista_vuelos.modificar_estado();
+                vuelos.modificar_estado();
                 break;
             case '3':
                 std::cout << "\nVolviendo al menú anterior.";
@@ -98,17 +93,17 @@ void modificar_vuelos()
     } while (opcion != '3');
 }
 
-void cupos()
+void menu_cupos()
 {
     do {
-        opciones({ "CUPOS", "Quitar cupos", "Aumentar cupos" });
+        menu_opciones({ "CUPOS", "Quitar cupos", "Aumentar cupos" });
 
         switch (opcion) {
             case '1':
-                lista_vuelos.modificar_cupos('q');
+                vuelos.modificar_cupos('q');
                 break;
             case '2':
-                lista_vuelos.modificar_cupos('a');
+                vuelos.modificar_cupos('a');
                 break;
             case '3':
                 std::cout << "\nVolviendo al menú anterior.";
@@ -119,7 +114,7 @@ void cupos()
     } while (opcion != '3');
 }
 
-void continuar()
+void menu_continuar()
 {
     do {
         std::cout << "\n¿Desea continuar? (s/n): ";
@@ -127,25 +122,24 @@ void continuar()
     } while (opcion != 's' && opcion != 'n');
 }
 
-void ingresar_vuelos()
+void menu_ingresar_vuelos()
 {
     do {
-        lista_vuelos.ingresar_vuelo();
-        continuar();
+        vuelos.ingresar_vuelo();
+        menu_continuar();
     } while (opcion == 's');
 }
 
-void ingresar_reservas()
+void menu_ingresar_reservas()
 {
     do {
-        lista_vuelos.ingresar_reserva();
-        continuar();
+        vuelos.ingresar_reserva();
+        menu_continuar();
     } while (opcion == 's');
 }
 
 int main()
 {
     principal();
-
     return 0;
 }
