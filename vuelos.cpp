@@ -138,7 +138,7 @@ void Vuelos::modificar_cupos(char o)
         ptr->cupos -= count;
         ptrnodor it = ptr->reservas.ultimo;
 
-        if (it != NULL && ptr->estado == 1)
+        if (ptr->cupos < 0 && it != NULL && ptr->estado == 1)
             for (; it != NULL && ptr->cupos != 0; it = it->anterior) {
                 it->espera = true;
                 ++(ptr->cupos);
